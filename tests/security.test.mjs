@@ -1,0 +1,62 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createApp } from '../src/server.mjs';
+import { hashToken, verifyToken, createAuth } from '../src/auth.mjs';
+const token='a-long-test-administration-key-for-unit-tests';
+const hash=await hashToken(token);
+const credentials={version:1,tokenHash:hash};
+test('chave com scrypt rejeita chave errada e hash invalido',async()=>{
+  assert.equal(await verifyToken(token,hash),true);
+  assert.equal(await verifyToken('incorrect',hash),false);
+  assert.equal(await verifyToken(token,'invalid'),false);
+});
+test('limite de tentativas, expiracao e revogacao de sessao',async()=>{
+  let now=1000;const auth=createAuth({tokenHash:hash,now:()=>now});
+  for(let i=0;i<5;i++)assert.equal((await auth.login('client','wrong')).status,401);
+  assert.equal((await auth.login('client',token)).status,429);
+  now+=15*60_000;const result=await auth.login('client',token);assert.equal(result.status,200);assert.equal(auth.valid(result.token),true);
+  auth.revoke(result.token);assert.equal(auth.valid(result.token),false);
+  const second=await auth.login('client',token);now+=4*3600_000;assert.equal(auth.valid(second.token),true);now+=4*3600_000;assert.equal(auth.valid(second.token),false);
+});
+test('producao exige HTTPS e credencial explicita',()=>{
+  assert.throws(()=>createApp({env:{}}));
+  assert.throws(()=>createApp({env:{APP_ORIGIN:'https://example.com',AUTH_FILE:'nonexistent/admin.json'}}),/admin:create/);
+  assert.throws(()=>createApp({env:{APP_ORIGIN:'http://example.com'},credentials}));
+  assert.throws(()=>createApp({env:{APP_ORIGIN:'https://example.com/other'},credentials}));
+  assert.throws(()=>createApp({env:{APP_ORIGIN:'https://user:secret@example.com'},credentials}));
+});
+test('verificacao da chave limita concorrencia para preservar memoria da VPS',async()=>{
+  const auth=createAuth({tokenHash:hash});
+  const results=await Promise.all(Array.from({length:6},(_,index)=>auth.login(`client-${index}`,token)));
+  assert.equal(results.filter(r=>r.status===200).length,2);
+  assert.equal(results.filter(r=>r.status===429).length,4);
+});
+test('API privada, CSRF, logout, rotas PWA e inexistencia de comandos Docker',async t=>{
+  const metrics={collect:async()=>{},snapshot:()=>({containers:[],host:{},sampledAt:new Date().toISOString()}),history:()=>[]};
+  const {server}=createApp({env:{PORT:'0',APP_ORIGIN:'https://central.test'},credentials,metrics});
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const base=`http://127.0.0.1:${server.address().port}`;
+  const get=path=>fetch(base+path,{redirect:'manual'});
+  assert.equal((await get('/api/overview')).status,401);
+  assert.equal((await get('/api/history')).status,401);
+  const post=(path,body,origin='https://central.test',cookie='')=>fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json','X-Panel-Request':'1',Origin:origin,Cookie:cookie},body:JSON.stringify(body)});
+  assert.equal((await post('/api/login',{token},'https://attacker.test')).status,403);
+  assert.equal((await fetch(base+'/api/login',{method:'POST',headers:{Origin:'https://central.test','Content-Type':'application/json'},body:JSON.stringify({token})})).status,403);
+  assert.equal((await post('/api/login',null)).status,400);
+  assert.equal((await post('/api/login',{username:'admin',password:token})).status,400);
+  assert.equal((await post('/api/login',{token:123})).status,400);
+  assert.equal((await post('/api/login',{token:'x'.repeat(3000)})).status,413);
+  assert.equal((await fetch(base+'/api/login',{method:'POST',headers:{Origin:'https://central.test','X-Panel-Request':'1','Content-Type':'application/json-invented'},body:'{}'})).status,415);
+  assert.equal((await post('/api/login',{token:'wrong'})).status,401);
+  const login=await post('/api/login',{token});assert.equal(login.status,200);
+  const cookie=login.headers.get('set-cookie');assert.match(cookie,/HttpOnly/);assert.match(cookie,/SameSite=Strict/);assert.match(cookie,/Secure/);
+  assert.match(cookie,/Max-Age=28800/);
+  const sessionCookie=cookie.split(';')[0];
+  assert.equal((await fetch(base+'/api/overview',{headers:{Cookie:sessionCookie}})).status,200);
+  assert.equal((await post('/api/containers/super-app/restart',{},undefined,sessionCookie)).status,405);
+  assert.equal((await post('/api/logout',{},undefined,sessionCookie)).status,200);
+  assert.equal((await fetch(base+'/api/overview',{headers:{Cookie:sessionCookie}})).status,401);
+  for(const path of ['/','/sw.js','/manifest.webmanifest','/offline.html','/pwa-offline.css','/icons/icon-180.png','/icons/icon-192.png','/icons/icon-512.png'])assert.equal((await get(path)).status,200,path);
+  assert.equal((await get('/%2e%2e/.env')).status,404);
+  const response=await get('/app.js');assert.match(response.headers.get('content-security-policy'),/script-src 'self'/);assert.equal(response.headers.get('cache-control'),'no-store');
+});

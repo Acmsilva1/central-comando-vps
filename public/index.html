@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#20463c"><meta name="description" content="Seus serviços e os recursos da VPS em um só lugar.">
+  <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Central VPS">
+  <title>Central de Comando · VPS</title><link rel="icon" href="/icons/icon-192.png"><link rel="apple-touch-icon" href="/icons/icon-180.png">
+  <link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" type="module"></script><script src="/pwa.js" defer></script>
+<link rel="stylesheet" href="/ui.css"><link rel="stylesheet" href="/visual.css"></head>
+<body class="central-app">
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Central de Comando, início"><img class="brand-mark" src="/icons/icon-192.png" alt="" width="40" height="43"><span>Central<span class="brand-sub">DE COMANDO</span></span></a>
+  <p class="nav-label">AMBIENTE PESSOAL</p>
+  <nav aria-label="Navegação principal">
+    <button class="nav-item active" data-view="overview" aria-current="page"><span aria-hidden="true">▦</span> Visão geral</button>
+    <button class="nav-item" data-view="containers"><span aria-hidden="true">▧</span> Containers <span id="nav-count" class="nav-count">—</span></button>
+    <button class="nav-item" data-view="history"><span aria-hidden="true">↗</span> Histórico</button>
+  </nav>
+  <p class="nav-label">SEUS APLICATIVOS</p>
+  <a class="nav-item" href="https://mensageria-andre-zap.duckdns.org" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Mensageria</a>
+  <a class="nav-item" href="https://super-app-go.duckdns.org" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Super App</a>
+  <div class="sidebar-bottom"><span class="server-led" aria-hidden="true"></span><div>Infraestrutura pessoal<small>Monitoramento em leitura</small></div></div>
+</aside>
+<div class="shell">
+  <header class="topbar"><div class="breadcrumb">Infraestrutura <span>/</span> <strong id="breadcrumb">Visão geral</strong></div><div class="top-actions"><button class="button small ui-theme-toggle" type="button" data-theme-toggle>☾ Tema escuro</button><span id="connection" class="badge neutral">Conectando</span><button id="install-app" class="button small" hidden>Instalar app</button><button id="logout" class="button small" hidden>Sair</button></div></header>
+  <main>
+    <section id="login" class="login panel" hidden><p class="eyebrow">SEU AMBIENTE, SOB CONTROLE</p><h1>Acesse sua central.</h1><p>Use sua chave de administração para acompanhar os serviços e a capacidade da VPS.</p><form id="login-form"><label>Chave de administração<input name="token" type="password" autocomplete="current-password" required minlength="32" maxlength="256"></label><button class="button primary">Entrar na central</button><p id="login-error" role="alert" hidden></p></form><p class="footnote">A chave é configurada no volume privado da central, sem banco externo.</p></section>
+    <div id="dashboard" hidden>
+      <div id="demo-banner" class="notice" hidden>Demonstração local · valores ilustrativos, sem conexão com a VPS.</div>
+      <div class="page-heading"><div><p class="eyebrow">CENTRAL DE COMANDO</p><h1 id="page-title">Sua VPS, em perspectiva.</h1><p id="page-copy">Acompanhe recursos, serviços e os sinais que merecem atenção.</p></div><button id="refresh" class="button"><span aria-hidden="true">↻</span> Atualizar</button></div>
+      <section class="server-strip" aria-label="Servidor monitorado"><div><span class="server-icon" aria-hidden="true">▤</span><div><strong id="hostname">Aguardando coletor</strong><span id="server-info" class="muted">Recursos do servidor</span></div></div><div class="strip-meta"><span id="uptime">Tempo ligado —</span><span id="updated">Sem leitura</span></div></section>
+      <div id="feedback" class="notice" role="status" aria-live="polite" hidden></div>
+      <section data-panel="overview" class="view">
+        <div class="kpi-grid">
+          <article class="kpi panel"><div class="kpi-label">PROCESSADOR <span aria-hidden="true">◫</span></div><div class="kpi-value"><strong id="cpu-value">—</strong><span>%</span></div><progress id="cpu-meter" max="100" value="0" aria-label="Uso do processador"></progress><p id="cpu-detail">Aguardando leitura</p></article>
+          <article class="kpi panel"><div class="kpi-label">MEMÓRIA RAM <span aria-hidden="true">▥</span></div><div class="kpi-value"><strong id="memory-value">—</strong><span>%</span></div><progress id="memory-meter" max="100" value="0" aria-label="Uso de memória"></progress><p id="memory-detail">Aguardando leitura</p></article>
+          <article class="kpi panel"><div class="kpi-label">ARMAZENAMENTO <span aria-hidden="true">▤</span></div><div class="kpi-value"><strong id="disk-value">—</strong><span>%</span></div><progress id="disk-meter" max="100" value="0" aria-label="Uso de disco"></progress><p id="disk-detail">Aguardando leitura</p></article>
+          <article class="kpi panel"><div class="kpi-label">CONTAINERS ATIVOS <span aria-hidden="true">▧</span></div><div class="kpi-value"><strong id="running-value">—</strong><span id="total-value">/ —</span></div><div class="service-summary"><span class="dot" aria-hidden="true"></span><span id="service-detail">Aguardando leitura</span></div><p id="restarts-detail">Reinícios —</p></article>
+        </div>
+        <div class="overview-grid"><section class="panel capacity"><div class="section-heading"><div><p class="eyebrow">CAPACIDADE</p><h2 id="capacity-title">Aguardando análise dos recursos</h2></div><span id="capacity-badge" class="badge neutral">Sem leitura</span></div><div class="capacity-body"><strong id="available-value">—</strong><div><b>de RAM disponíveis</b><p>Inclui o cache que o sistema pode recuperar.</p></div></div><div id="insights" class="insights"></div></section><section class="panel ranking"><div class="section-heading"><div><p class="eyebrow">DISTRIBUIÇÃO</p><h2>Quem está usando a memória?</h2></div></div><div id="memory-ranking" class="ranking-list"><p class="empty">Aguardando containers.</p></div><p class="footnote">Memória de trabalho por container, sem cache recuperável.</p></section></div>
+      </section>
+      <section data-panel="containers" class="view" hidden><div class="panel"><div class="section-heading"><div><p class="eyebrow">SERVIÇOS</p><h2>Todos os containers</h2></div><label class="search"><span class="sr-only">Buscar container</span><input id="search" type="search" placeholder="Buscar nome ou projeto…"></label></div><div id="container-list" class="container-grid"></div></div></section>
+      <section data-panel="history" class="view" hidden><div class="panel"><div class="section-heading"><div><p class="eyebrow">HISTÓRICO DA VPS</p><h2 id="history-title">Uso de recursos ao longo do tempo</h2></div><label><span class="sr-only">Período do histórico</span><select id="period"><option value="1h">Última hora</option><option value="6h">Últimas 6 horas</option><option value="24h">Últimas 24 horas</option><option value="7d">Últimos 7 dias</option></select></label></div><div class="chart-legend"><span class="cpu-key">CPU</span><span class="memory-key">RAM</span><span class="disk-key">Disco</span></div><div id="history-chart" class="chart-wrap"></div><p id="history-note" class="footnote">Uma amostra por minuto. O histórico começa com a primeira coleta.</p></div></section>
+      <section data-panel="overview" class="panel service-section"><div class="section-heading"><div><p class="eyebrow">SEUS CONTAINERS</p><h2>Operação em um olhar</h2></div><button class="text-button" data-view="containers">Ver todos <span aria-hidden="true">→</span></button></div><div class="table-wrap"><table><thead><tr><th>Container / projeto</th><th>Estado</th><th class="numeric">CPU</th><th class="numeric">RAM</th><th class="numeric">Reinícios</th><th><span class="sr-only">Detalhes</span></th></tr></thead><tbody id="container-rows"></tbody></table></div></section>
+      <footer><span>Central de Comando <span class="version">v0.1</span></span><span>Coleta a cada 15 s · histórico de 7 dias</span></footer>
+    </div>
+    <div id="initial-loading" class="loading-state" role="status">Conectando à central…</div>
+  </main>
+</div>
+<dialog id="container-dialog"><div class="dialog-head"><div><p class="eyebrow">DETALHES DO CONTAINER</p><h2 id="dialog-name"></h2></div><button id="close-dialog" class="button" aria-label="Fechar detalhes">✕</button></div><dl id="dialog-details"></dl><p class="footnote">Consulta em leitura. Nenhuma ação modifica o serviço.</p></dialog>
+<div id="pwa-message" class="pwa-message" role="status" hidden><span id="pwa-copy"></span><button id="pwa-update" class="button" hidden>Atualizar app</button><button id="pwa-dismiss" class="text-button" aria-label="Fechar aviso">✕</button></div>
+</body></html>

@@ -1,0 +1,41 @@
+services:
+  central:
+    build: .
+    image: central-comando-vps:0.1.0
+    container_name: central-comando-vps
+    restart: unless-stopped
+    init: true
+    environment:
+      APP_ORIGIN: https://central-comando-vps.duckdns.org
+      AUTH_FILE: /data/auth/admin.json
+      METRICS_FILE: /metrics/snapshot.json
+      HISTORY_FILE: /data/history.json
+      MONITOR_CONFIG_FILE: /run/secrets/mensageria.json
+      MONITOR_STATE_FILE: /data/monitor-state.json
+    ports:
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - /var/lib/central-comando-vps/metrics:/metrics:ro
+      - central-data:/data
+      - type: bind
+        source: /etc/central-comando-vps/mensageria.json
+        target: /run/secrets/mensageria.json
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=8m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 50
+    mem_limit: 192m
+    cpus: 0.50
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+volumes:
+  central-data:

@@ -1,0 +1,23 @@
+[Unit]
+Description=Coleta sanitizada das metricas da VPS
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /opt/central-comando-vps/scripts/collect_metrics.py --output /var/lib/central-comando-vps/metrics
+TimeoutStartSec=45
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=/var/lib/central-comando-vps/metrics
+
+[Install]
+WantedBy=multi-user.target

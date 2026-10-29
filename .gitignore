@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+.runtime/
+node_modules/
+coverage/
+*.pem
+*.key
+*.log
+__pycache__/
+_bmad/
+_bmad-output/
+.agents/skills/
+.codex/
