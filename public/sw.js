@@ -1,4 +1,4 @@
-const CACHE = 'central-vps-static-5ed83146349af4c4';
+const CACHE = 'central-vps-static-a9372d3465601303';
 const ASSETS = ['/offline.html','/pwa-offline.css','/icons/icon-192.png','/icons/icon-512.png'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS))));
 self.addEventListener('activate', event => event.waitUntil((async () => {

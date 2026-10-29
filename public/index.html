@@ -11,16 +11,16 @@
 <body class="central-app">
 <aside class="sidebar">
   <a class="brand" href="/" aria-label="Central de Comando, início"><img class="brand-mark" src="/icons/icon-192.png" alt="" width="40" height="43"><span>Central<span class="brand-sub">DE COMANDO</span></span></a>
-  <p class="nav-label">AMBIENTE PESSOAL</p>
-  <nav aria-label="Navegação principal">
+  <p class="nav-label" data-session-only hidden>AMBIENTE PESSOAL</p>
+  <nav aria-label="Navegação principal" data-session-only hidden>
     <button class="nav-item active" data-view="overview" aria-current="page"><span aria-hidden="true">▦</span> Visão geral</button>
     <button class="nav-item" data-view="containers"><span aria-hidden="true">▧</span> Containers <span id="nav-count" class="nav-count">—</span></button>
     <button class="nav-item" data-view="history"><span aria-hidden="true">↗</span> Histórico</button>
   </nav>
-  <p class="nav-label">SEUS APLICATIVOS</p>
-  <a class="nav-item" href="https://mensageria-andre-zap.duckdns.org" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Mensageria</a>
-  <a class="nav-item" href="https://super-app-go.duckdns.org" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Super App</a>
-  <div class="sidebar-bottom"><span class="server-led" aria-hidden="true"></span><div>Infraestrutura pessoal<small>Monitoramento em leitura</small></div></div>
+  <p class="nav-label" data-session-only hidden>SEUS APLICATIVOS</p>
+  <a class="nav-item" data-session-only hidden href="https://mensageria-andre-zap.duckdns.org" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Mensageria</a>
+  <a class="nav-item" data-session-only hidden href="https://super-app-go.duckdns.org" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Super App</a>
+  <div class="sidebar-bottom" data-session-only hidden><span class="server-led" aria-hidden="true"></span><div>Infraestrutura pessoal<small>Monitoramento em leitura</small></div></div>
 </aside>
 <div class="shell">
   <header class="topbar"><div class="breadcrumb">Infraestrutura <span>/</span> <strong id="breadcrumb">Visão geral</strong></div><div class="top-actions"><button class="button small ui-theme-toggle" type="button" data-theme-toggle>☾ Tema escuro</button><span id="connection" class="badge neutral">Conectando</span><button id="install-app" class="button small" hidden>Instalar app</button><button id="logout" class="button small" hidden>Sair</button></div></header>
