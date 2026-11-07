@@ -27,6 +27,9 @@ export function createApp({ env = process.env, demo = false, metrics, credential
   const secure = origin.protocol === 'https:';
   const cookie = (value, maxAge) => `central_session=${value}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure ? '; Secure' : ''}`;
   const routes = new Map([
+    ['/ui/atoms/dom.mjs',['ui/atoms/dom.mjs','text/javascript']],
+    ['/ui/molecules/message.mjs',['ui/molecules/message.mjs','text/javascript']],
+    ['/ui/organisms/feedback.mjs',['ui/organisms/feedback.mjs','text/javascript']],
     ['/ui.js',['ui.js','text/javascript']], ['/ui.css',['ui.css','text/css']], ['/visual.css',['visual.css','text/css']],
     ['/', ['index.html','text/html']], ['/app.js',['app.js','text/javascript']], ['/styles.css',['styles.css','text/css']],
     ['/pwa.js',['pwa.js','text/javascript']], ['/sw.js',['sw.js','text/javascript']], ['/manifest.webmanifest',['manifest.webmanifest','application/manifest+json']],
